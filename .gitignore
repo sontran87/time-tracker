@@ -1,0 +1,5 @@
+backend/node_modules/
+frontend/node_modules/
+---
+
+## **2. File .gitignore (monorepo chuẩn)**
