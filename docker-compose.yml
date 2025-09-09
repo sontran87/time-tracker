@@ -1,19 +1,33 @@
-
----
-
-## **3. Docker Compose (docker-compose.yml)**
 services:
   backend:
-    build: ./backend
-    ports:
-      - "4000:4000"
+    image: node:20
+    container_name: time-tracker-backend
+    working_dir: /app
+    command: sh -c "yarn install && yarn start"
     volumes:
-      - ./backend/data:/app/data
+      - ./backend:/app
+      - ./data:/app/data  # Map thư mục data để lưu file database.sqlite ra ngoài host
     environment:
       - NODE_ENV=production
+      - PORT=4000
+      - JWT_SECRET=super_secret_jwt_key # Đặt lại cho phù hợp, hoặc load từ .env
+    ports:
+      - "4000:4000"
+    restart: unless-stopped
+
   frontend:
-    build: ./frontend
+    image: node:20
+    container_name: time-tracker-frontend
+    working_dir: /app
+    command: sh -c "yarn install && yarn build && yarn global add serve && serve -s build -l 3000"
+    volumes:
+      - ./frontend:/app
+    environment:
+      - REACT_APP_API_URL=http://localhost:4000/api
+      # Nếu deploy trên NAS thật: http://NAS_IP:4000/api
     ports:
       - "3000:3000"
     depends_on:
       - backend
+    restart: unless-stopped
+

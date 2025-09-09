@@ -31,7 +31,8 @@ export default function BottomNav() {
       style={{
         position: "fixed",
         left: 0, right: 0, bottom: 0, zIndex: 10,
-        borderTop: "1px solid #eee"
+        borderTop: "1px solid #eee",
+        backgroundColor: "#ffffff"
       }}
       safeArea
     >

@@ -75,6 +75,7 @@ export default function TimeLogForm() {
         <Form.Item label="Ngày" name="date">
           <DatePicker value={new Date(date)} onChange={d => setDate(dayjs(d).format("YYYY-MM-DD"))} />
         </Form.Item>
+        {/* 
         <Form.Item label="ID sản phẩm" name="productId" rules={[{ required: true }]}>
           <Selector
             options={products.map(p => ({ label: p.productId, value: p.productId }))}
@@ -82,12 +83,22 @@ export default function TimeLogForm() {
             onChange={arr => setProductId(arr[0])}
           />
         </Form.Item>
-        <Form.Item label="Mã sản phẩm">
+        */}
+                <Form.Item label="ID sản phẩm" name="productId" rules={[{ required: true }]}>
+          <Input
+
+            onChange={v => setProductId(v)}
+          />
+        </Form.Item>
+{/*         <Form.Item label="Mã sản phẩm">
           <Input value={productInfo.code || ""} disabled />
+        </Form.Item> */}
+        <Form.Item label="Mã sản phẩm: Tên sản phẩm">
+          <Input value={productInfo.code + " : " + productInfo.name || ""} disabled />
         </Form.Item>
-        <Form.Item label="Tên sản phẩm">
+{/*         <Form.Item label="Tên sản phẩm">
           <Input value={productInfo.name || ""} disabled />
-        </Form.Item>
+        </Form.Item> */}
         <Form.Item label="Hạng mục công việc" name="workitem" rules={[{ required: true }]}>
           <Selector
             options={workitems.map(w => ({ label: w.name, value: w.id }))}
