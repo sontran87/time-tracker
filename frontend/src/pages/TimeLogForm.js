@@ -1,6 +1,16 @@
 // TimeLogForm.js: Form ghi nhận chấm công (tối ưu lookup, số lượng, tổng thời gian ngày)
 import React, { useState, useEffect } from "react";
-import { DatePicker, Form, Input, Button, Selector, Toast, Space } from "antd-mobile";
+import {
+  DatePicker,
+  Form,
+  Input,
+  Button,
+  Selector,
+  Toast,
+  Space,
+  List,
+  CalendarPicker,
+} from "antd-mobile";
 import { api } from "../api";
 import dayjs from "dayjs";
 
@@ -16,16 +26,19 @@ export default function TimeLogForm() {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [workLabel, setWorkLabel] = useState("Hạng mục công việc:");
+  const [calendarVisible, setCalendarVisible] = useState(false);
+  const singleDate = new Date();
 
   useEffect(() => {
-    api.get("/products").then(res => setProducts(res.data));
-    api.get("/parts").then(res => setParts(res.data));
-    api.get("/workitems").then(res => setWorkitems(res.data));
+    api.get("/products").then((res) => setProducts(res.data));
+    api.get("/parts").then((res) => setParts(res.data));
+    api.get("/workitems").then((res) => setWorkitems(res.data));
   }, []);
 
   useEffect(() => {
     if (productId) {
-      const p = products.find(x => x.productId === productId);
+      const p = products.find((x) => x.productId === productId);
       setProductInfo(p || {});
     } else {
       setProductInfo({});
@@ -34,7 +47,7 @@ export default function TimeLogForm() {
 
   useEffect(() => {
     if (partId) {
-      const p = parts.find(x => x.id === partId);
+      const p = parts.find((x) => x.id === partId);
       setPartInfo(p || {});
     } else {
       setPartInfo({});
@@ -44,8 +57,9 @@ export default function TimeLogForm() {
   // Lấy tổng số giờ đã nhập trong ngày
   useEffect(() => {
     setLoading(true);
-    api.get("/time-logs", { params: { date } })
-      .then(res => setLogs(res.data))
+    api
+      .get("/time-logs", { params: { date } })
+      .then((res) => setLogs(res.data))
       .finally(() => setLoading(false));
   }, [date]);
 
@@ -60,7 +74,7 @@ export default function TimeLogForm() {
         ProductId: productInfo.id,
         WorkItemId: values.workitem,
         quantity: Number(values.quantity),
-        partId: partInfo.id
+        partId: partInfo.id,
       });
       Toast.show({ icon: "success", content: "Đã lưu!" });
     } catch {
@@ -71,9 +85,41 @@ export default function TimeLogForm() {
   return (
     <div style={{ padding: 8, paddingBottom: 60 }}>
       <h3>Ghi nhận chấm công</h3>
-      <Form layout="vertical" onFinish={onFinish} footer={<Button block color="primary" type="submit">Lưu</Button>}>
-        <Form.Item label="Ngày" name="date">
-          <DatePicker value={new Date(date)} onChange={d => setDate(dayjs(d).format("YYYY-MM-DD"))} />
+      <Form
+        layout="vertical"
+        onFinish={onFinish}
+        footer={
+          <Button block color="primary" type="submit">
+            Lưu
+          </Button>
+        }
+      >
+        {/* <Form.Item label="Ngày" name="date">
+          <DatePicker
+            value={new Date(date)}
+            onChange={(d) => setDate(dayjs(d).format("YYYY-MM-DD"))}
+          />
+        </Form.Item> */}
+        {/* <Form.Item label="Ngày" name="date">
+          <DatePicker
+            value={new Date(date)}
+            onChange={(d) => setDate(dayjs(d).format("YYYY-MM-DD"))}
+          />
+        </Form.Item> */}
+        <Form.Item
+            onClick={() => {
+              setCalendarVisible(true);
+            }}
+          >
+            Ngày: {date}
+            <CalendarPicker
+              visible={calendarVisible}
+              selectionMode="single"
+              defaultValue={singleDate}
+              onClose={() => setCalendarVisible(false)}
+              onMaskClick={() => setCalendarVisible(false)}
+              onChange={(d) => setDate(dayjs(d).format("YYYY-MM-DD"))}
+            />
         </Form.Item>
         {/* 
         <Form.Item label="ID sản phẩm" name="productId" rules={[{ required: true }]}>
@@ -84,39 +130,78 @@ export default function TimeLogForm() {
           />
         </Form.Item>
         */}
-                <Form.Item label="ID sản phẩm" name="productId" rules={[{ required: true }]}>
-          <Input
-
-            onChange={v => setProductId(v)}
-          />
+        <Form.Item
+          label="ID sản phẩm"
+          name="productId"
+          rules={[{ required: true }]}
+        >
+          <Input onChange={(v) => setProductId(v)} />
         </Form.Item>
-{/*         <Form.Item label="Mã sản phẩm">
+        {/*         <Form.Item label="Mã sản phẩm">
           <Input value={productInfo.code || ""} disabled />
         </Form.Item> */}
-        <Form.Item label="Mã sản phẩm: Tên sản phẩm">
-          <Input value={productInfo.code + " : " + productInfo.name || ""} disabled />
+        <Form.Item label="Sản phẩm:">
+          <Input
+            placeholder=""
+            value={
+              productInfo?.code == null
+                ? "Kiểm tra lại ID"
+                : `${productInfo.code} : ${productInfo?.name ?? ""}`
+            }
+            disabled
+          />
         </Form.Item>
-{/*         <Form.Item label="Tên sản phẩm">
+        {/* <Form.Item label="Tên sản phẩm">
           <Input value={productInfo.name || ""} disabled />
         </Form.Item> */}
-        <Form.Item label="Hạng mục công việc" name="workitem" rules={[{ required: true }]}>
+        {/* <Form.Item label="Hạng mục công việc" name="workitem" rules={[{ required: true }]}>
           <Selector
             options={workitems.map(w => ({ label: w.name, value: w.id }))}
           />
         </Form.Item>
         <Form.Item label="Số lượng" name="quantity" initialValue={1} rules={[{ required: true }]}>
           <Input type="number" min={1} value={quantity} onChange={v => setQuantity(Number(v))} />
-        </Form.Item>
-        <Form.Item label="ID linh kiện" name="partId">
+        </Form.Item> */}
+        <Form.Item
+          label={workLabel}
+          name="workitem"
+          rules={[{ required: true, message: "Vui lòng chọn hạng mục" }]}
+        >
           <Selector
-            options={parts.map(p => ({ label: p.id + "", value: p.id }))}
+            options={workitems.map((w) => ({ label: w.id, value: w.id }))}
+            onChange={(v) => {
+              const item = workitems[v - 1].name;
+              setWorkLabel(item ? `Hạng mục: ${item}` : "Hạng mục công việc:");
+            }}
+          />
+        </Form.Item>
+        <Form.Item
+          label="Số lượng"
+          name="quantity"
+          initialValue={1}
+          rules={[{ required: true }]}
+        >
+          <Input
+            type="number"
+            min={1}
+            value={quantity}
+            onChange={(v) => setQuantity(Number(v))}
+          />
+        </Form.Item>
+        <Form.Item label="Loại linh kiện" name="partId">
+          <Selector
+            options={parts.map((p) => ({ label: p.name + "", value: p.id }))}
             value={partId ? [partId] : []}
-            onChange={arr => setPartId(arr[0])}
+            onChange={(arr) => setPartId(arr[0])}
           />
         </Form.Item>
         <Form.Item label="Thông tin linh kiện">
           <Input
-            value={productInfo.code && partInfo.name ? `${productInfo.code} - ${partInfo.name}` : ""}
+            value={
+              productInfo.code && partInfo.name
+                ? `${productInfo.code} - ${partInfo.name}`
+                : ""
+            }
             disabled
           />
         </Form.Item>
@@ -134,7 +219,8 @@ export default function TimeLogForm() {
         </Form.Item>
       </Form>
       <div style={{ marginTop: 12 }}>
-        <b>Tổng thời gian hôm nay:</b> {totalHour} giờ ({(totalHour * 60).toFixed(0)} phút)
+        <b>Tổng thời gian hôm nay:</b> {totalHour} giờ (
+        {(totalHour * 60).toFixed(0)} phút)
       </div>
     </div>
   );

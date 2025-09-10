@@ -41,7 +41,6 @@ export default function TimeLogHistory() {
           onClick={() => nav("/?edit=" + l.id)}
         >
           <b>{l.product_code}</b> | {l.workitem_name} | {l.hour} giờ | SL: {l.quantity}
-          <br />
           {l.notes && <i style={{ color: "#888" }}>{l.notes}</i>}
           <Button size="mini" color="danger" onClick={e => { e.stopPropagation(); onDelete(l.id); }} style={{ float: "right" }}>Xoá</Button>
         </div>

@@ -10,11 +10,14 @@ import ReportPage from "./pages/ReportPage";
 import AdminPage from "./pages/AdminPage";
 import ProfilePage from "./pages/ProfilePage";
 import ProtectedRoute from "./components/ProtectedRoute";
-
+import { ConfigProvider } from "antd-mobile";
+import viVN from "antd-mobile/es/locales/vi-VN"; // hoặc "antd-mobile/cjs/locales/vi-VN"
+import enUS from "antd-mobile/es/locales/en-US"; // hoặc "antd-mobile/cjs/locales/en-US"
 export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <ConfigProvider locale={enUS}>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<ProtectedRoute><TimeLogForm /></ProtectedRoute>} />
@@ -25,6 +28,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
         <BottomNav />
+        </ConfigProvider>
       </AuthProvider>
     </BrowserRouter>
   );
