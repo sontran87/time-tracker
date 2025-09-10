@@ -11,3 +11,5 @@
 # clone repo
 cd time-tracker
 docker-compose up -d
+
+##test
