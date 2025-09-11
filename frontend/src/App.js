@@ -17,7 +17,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <ConfigProvider locale={enUS}>
+        <ConfigProvider locale={viVN}>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<ProtectedRoute><TimeLogForm /></ProtectedRoute>} />

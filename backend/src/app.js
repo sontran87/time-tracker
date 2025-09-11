@@ -16,6 +16,7 @@ app.use("/api/parts", require("./routes/parts"));
 app.use("/api/product-parts", require("./routes/productParts"));
 app.use("/api/workitems", require("./routes/workitems"));
 app.use("/api/time-logs", require("./routes/timelogs"));
+app.use("/api/reports", require("./routes/reports"));
 
 app.get("/", (req, res) => res.send("Time Tracker backend API OK!"));
 

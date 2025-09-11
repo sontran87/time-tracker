@@ -1,6 +1,6 @@
 // TimeLogHistory.js: Lịch sử, lọc ngày, tổng, bấm dòng quay về form sửa
 import React, { useEffect, useState } from "react";
-import { DatePicker, Button, Dialog, Toast } from "antd-mobile";
+import { DatePicker, Button, Dialog, Toast, Form, CalendarPicker } from "antd-mobile";
 import { api } from "../api";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +10,8 @@ export default function TimeLogHistory() {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(false);
   const nav = useNavigate();
+  const [calendarVisible, setCalendarVisible] = useState(false);
+  const singleDate = new Date();
 
   useEffect(() => {
     setLoading(true);
@@ -31,7 +33,23 @@ export default function TimeLogHistory() {
   return (
     <div style={{ padding: 8, paddingBottom: 60 }}>
       <h3>Lịch sử chấm công</h3>
-      <DatePicker value={new Date(date)} onChange={d => setDate(dayjs(d).format("YYYY-MM-DD"))} />
+              <Form.Item
+            onClick={() => {
+              setCalendarVisible(true);
+            }}
+          >
+            Ngày: {date}
+            <CalendarPicker
+              visible={calendarVisible}
+              selectionMode="single"
+              defaultValue={singleDate}
+              onClose={() => setCalendarVisible(false)}
+              onMaskClick={() => setCalendarVisible(false)}
+              onChange={(d) => setDate(dayjs(d).format("YYYY-MM-DD"))}
+            />
+        </Form.Item>
+
+      {/* <DatePicker value={new Date(date)} onChange={d => setDate(dayjs(d).format("YYYY-MM-DD"))} /> */}
       {loading && <div>Đang tải...</div>}
       {!loading && logs.length === 0 && <div>Không có dữ liệu.</div>}
       {!loading && logs.map(l => (
